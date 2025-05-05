@@ -4,7 +4,7 @@ use crate::ral::{
 use crate::transition::{EndpointConfig, EndpointDescriptor};
 use core::marker::PhantomData;
 use critical_section::{CriticalSection, Mutex};
-use embedded_hal::blocking::delay::DelayMs;
+use embedded_hal::delay::DelayNs;
 use usb_device::bus::{PollResult, UsbBusAllocator};
 use usb_device::endpoint::{EndpointAddress, EndpointType};
 use usb_device::{Result, UsbDirection, UsbError};
@@ -139,7 +139,7 @@ impl<USB: UsbPeripheral> UsbBus<USB> {
         }
     }
 
-    pub fn force_reset(&self, delay: &mut impl DelayMs<u32>) -> Result<()> {
+    pub fn force_reset(&self, delay: &mut impl DelayNs) -> Result<()> {
         critical_section::with(|cs| {
             let regs = self.regs.borrow(cs);
             write_reg!(otg_device, regs.device(), DCTL, SDIS: 1); // Soft disconnect
